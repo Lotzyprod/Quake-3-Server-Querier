@@ -190,8 +190,8 @@ class PromodeQuerier:
 		
 		loop = asyncio.get_event_loop()
 		recvq = asyncio.Queue()
-		transport, protocol = await loop.create_datagram_endpoint(lambda: PromodeQuerier.AsyncProtocol(recvq),family=socket.AF_INET,remote_addr=(address,port))
-		transport.sendto(PromodeQuerier.build_master_query_packet(protocol,tags))
+		transport, proto = await loop.create_datagram_endpoint(lambda: PromodeQuerier.AsyncProtocol(recvq),family=socket.AF_INET,remote_addr=(address,port))
+		transport.sendto(PromodeQuerier.build_query_master_packet(protocol,tags))
 		try:
 			data, address = await asyncio.wait_for(recvq.get(), timeout=timeout)
 		except:
