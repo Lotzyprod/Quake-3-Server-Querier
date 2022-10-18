@@ -92,15 +92,6 @@ class PromodeQuerier:
 				return
 		return PromodeQuerier.parseServerPacket(data)
 
-	# sync query multiple game servers
-	# input:
-	#	tuple[[str: address, int: port]] (domain/ipv4 + port)
-	# 	int: timeout (what amount of secs wait if host not response)
-	# output: tuple of dicts (servers game info)
-	@staticmethod
-	def queryServers(servers: tuple[[str,int]], timeout: int=5) -> tuple[dict | None]:
-		return [PromodeQuerier.queryServer(server[0],server[1],timeout) for server in servers]
-
 	@staticmethod
 	async def queryServerAsync(address: str, port: int, timeout: int=5) -> dict | None:	
 		if not (0 <= port <= 65535):
@@ -121,10 +112,6 @@ class PromodeQuerier:
 		transport.close()
 		return PromodeQuerier.parseServerPacket(data)
 
-	@staticmethod
-	async def queryServersAsync(servers: tuple[[str,int]], timeout: int=5) -> tuple[dict | None]:
-		return await asyncio.gather(*[PromodeQuerier.queryServerAsync(server[0],server[1],timeout) for server in servers])
-
 	# generate packet for ♂master♂ server
 	# input:
 	# 	int: protocol (game protocol)
@@ -134,7 +121,7 @@ class PromodeQuerier:
 		return b'\xff\xff\xff\xffgetservers '+str(protocol).encode()+tags+b'\x00'
 
 	# parse response from ♂master♂ server as tuple like [[ip,port],...]
-	def parseMasterData(data: bytes) -> tuple[[str,int]] | None:
+	def parseMasterData(data: bytes) -> tuple[(str,int)] | None:
 		if data[:22] != b'\xff\xff\xff\xffgetserversResponse':
 			return
 		data = str(data[22:])
@@ -143,7 +130,7 @@ class PromodeQuerier:
 			if (data[i] == '\\' and data[i + 7] == '\\'):
 				ip   = str(ord(data[i + 1])) + '.' + str(ord(data[i + 2])) + '.' + str(ord(data[i + 3])) + '.' + str(ord(data[i + 4]))
 				port = (ord(data[i + 5]) << 8) + ord(data[i + 6])
-				servers.append([ip,port])
+				servers.append((ip,port))
 		return servers
 
 	# sync query ♂master♂ server
@@ -155,7 +142,7 @@ class PromodeQuerier:
 	#   str: tags (game tags with space delimiter like as: 'empty full bots ...')  
 	# output: tuple[[str,int]] (servers addresses)
 	@staticmethod
-	def queryMaster(address: str, port: int, timeout: int = 5, protocol: int = 68, tags: str = None) -> tuple[[str,int]] | None:
+	def queryMaster(address: str, port: int, timeout: int = 5, protocol: int = 68, tags: str = None) -> tuple[(str,int)] | None:
 		if not (0 <= port <= 65535):
 			return
 		ip = address if PromodeQuerier.is_valid_address(address) else PromodeQuerier.address_from_domain(address)
@@ -170,20 +157,8 @@ class PromodeQuerier:
 				return
 		return PromodeQuerier.parseMasterData(data)
 
-	# sync query multiple ♂master♂ servers
-	# input:
-	#	tuple[[str: address, int: port]] (domain/ipv4 + port)
-	# 	int: timeout (what amount of secs wait if host not response)
-	# 	int: timeout (what amount of secs wait if host not response)
-	#   int: protocol (game protocol number)
-	#   str: tags (game tags with space delimiter like as: 'empty full bots ...')  
-	# output: tuple of tuples of tuples (servers game info)
 	@staticmethod
-	def queryMasters(servers: tuple[[str,int]], timeout: int = 5, protocol: int = 68, tags: str = None) -> tuple[tuple[[str,int]] | None]:
-		return [PromodeQuerier.queryMaster(server[0],server[1],timeout,protocol,tags) for server in servers]
-
-	@staticmethod
-	async def queryMasterAsync(address: str, port: int, timeout: int=5, protocol: int = 68, tags: str = None) -> tuple[[str,int]] | None:	
+	async def queryMasterAsync(address: str, port: int, timeout: int=5, protocol: int = 68, tags: str = None) -> tuple[(str,int)] | None:	
 		if not (0 <= port <= 65535):
 			return
 		ip = address if PromodeQuerier.is_valid_address(address) else PromodeQuerier.address_from_domain(address)
@@ -200,7 +175,3 @@ class PromodeQuerier:
 			return 
 		transport.close()
 		return PromodeQuerier.parseMasterData(data)
-
-	@staticmethod
-	async def queryMastersAsync(servers: tuple[[str,int]], timeout: int=5, protocol: int = 68, tags: str = None) -> tuple[tuple[[str,int]] | None]:
-		return await asyncio.gather(*[PromodeQuerier.queryMasterAsync(server[0],server[1],timeout,protocol,tags) for server in servers])
