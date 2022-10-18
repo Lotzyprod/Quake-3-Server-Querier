@@ -6,14 +6,15 @@ import asyncio
 
 # async method
 async def main():
-	servers = PromodeQuerier.queryMaster("master.ioquake3.org",27950,5)
-	print(await PromodeQuerier.queryMultAsync(servers,10))
-	print(await PromodeQuerier.queryAsync("isona.me",27960,5))
+	servers = await PromodeQuerier.queryMasterAsync("master.ioquake3.org",27950,5)
+	print(await PromodeQuerier.queryServersAsync(servers,5))
+	print(await PromodeQuerier.queryServerAsync("isona.me",27960,5))
 asyncio.run(main())
-# sync method
-servers = [{"address":"138.2.130.215", "port":27960}, {"address":"master.maverickservers.com", "port":27950}, {"address":"master3.idsoftware.com", "port":27950},{"address":"51.38.83.66", "port":27960}, {"address":"51.38.83.66", "port":27961}, {"address":"games.magnoren.uk", "port":27960}, {"address":"snapcase.net", "port":27960}, {"address":"cpma.ovh", "port":27960}, {"address":"cpma.ovh", "port":27961}, {"address":"newtype.eu", "port":27961}, {"address":"newtype.eu", "port":27962}, {"address":"q3df.ru", "port":27970}, {"address":"q3df.ru", "port":27971}, {"address":"q3df.ru", "port":27972}, {"address":"isona.me", "port":27960}, {"address":"oafps.com", "port":27961}, {"address":"oafps.com", "port":27962}, {"address":"oafps.com", "port":27963}, {"address":"oafps.com", "port":27964}, {"address":"snapcase.net", "port":27961}, {"address":"artemis.snapcase.net", "port":27960}, {"address":"artemis.snapcase.net", "port":27961}, {"address":"46.38.48.64", "port":27960}, {"address":"46.38.48.64", "port":27961}, {"address":"46.38.48.64", "port":27962}]
 
-print(PromodeQuerier.queryMult(servers,2))
-print(PromodeQuerier.query("isona.me",27960,5))
+# sync method
+servers = [["138.2.130.215",27960], ["master.maverickservers.com", 27950], ["master3.idsoftware.com", 27950],["51.38.83.66", 27960], ["51.38.83.66", 27961], ["games.magnoren.uk", 27960], ["snapcase.net", 27960], ["cpma.ovh", 27960], ["cpma.ovh", 27961], ["newtype.eu", 27961], ["newtype.eu", 27962], ["q3df.ru", 27970], ["q3df.ru", 27971], ["q3df.ru", 27972], ["isona.me", 27960], ["oafps.com", 27961], ["oafps.com", 27962], ["oafps.com", 27963], ["oafps.com", 27964], ["snapcase.net", 27961], ["artemis.snapcase.net", 27960], ["artemis.snapcase.net", 27961], ["46.38.48.64", 27960], ["46.38.48.64", 27961], ["46.38.48.64", 27962]]
+
+print(PromodeQuerier.queryServers(servers,4))
+print(PromodeQuerier.queryServer("isona.me",27960,5))
 
 ```
